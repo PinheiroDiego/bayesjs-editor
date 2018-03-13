@@ -153,11 +153,11 @@ class Header extends Component {
             <li>
               <a href="" onClick={this.handleOpenNetworkClick}>Abrir Rede</a>
             </li>
-            <li>
-              <a href="" onClick={this.handleSaveNetworkClick}>Salvar Rede</a>
+              <li>
+              <a href="" onClick={this.handleOpenNetFileClick}>Abrir Rede .NET</a>
             </li>
             <li>
-              <a href="" onClick={this.handleOpenNetFileClick}>Abrir arquivo .net</a>
+              <a href="" onClick={this.handleSaveNetworkClick}>Salvar Rede</a>
             </li>
           </ul>
         )}
