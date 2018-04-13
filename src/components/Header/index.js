@@ -8,6 +8,8 @@ import { v4 } from 'uuid';
 import styles from './styles.css';
 import { convert } from 'bayesjs-converter';
 
+import '../../utils/OWLConversor/OWLConversor.js';
+
 class Header extends Component {
   state = {
     menuVisible: false,
@@ -51,6 +53,22 @@ class Header extends Component {
     openFile('.json', (json) => {
       try {
         const state = JSON.parse(json);
+
+        this.props.dispatch(loadNetwork(state));
+        this.props.onRequestRedraw();
+      } catch (ex) {
+        console.warn(ex);
+        alert('Arquivo inválido');
+      }
+    });
+  };
+
+  handleOpenOntologyClick = (e) => {
+    e.preventDefault();
+    openFile('.owl', (content) => {
+      try {
+        var state = OWLConversor.convertFromString(content);
+console.info(state);
 
         this.props.dispatch(loadNetwork(state));
         this.props.onRequestRedraw();
@@ -152,6 +170,9 @@ class Header extends Component {
             </li>
             <li>
               <a href="" onClick={this.handleOpenNetworkClick}>Abrir Rede</a>
+            </li>
+            <li>
+              <a href="" onClick={this.handleOpenOntologyClick}>Abrir Ontologia</a>
             </li>
               <li>
               <a href="" onClick={this.handleOpenNetFileClick}>Abrir Rede .NET </a>
