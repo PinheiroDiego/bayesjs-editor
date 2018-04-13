@@ -8,6 +8,8 @@ import { v4 } from 'uuid';
 import styles from './styles.css';
 import { convert } from 'bayesjs-converter';
 
+import '../../utils/OWLConversor/OWLConversor.js';
+
 class Header extends Component {
   state = {
     menuVisible: false,
@@ -51,6 +53,22 @@ class Header extends Component {
     openFile('.json', (json) => {
       try {
         const state = JSON.parse(json);
+
+        this.props.dispatch(loadNetwork(state));
+        this.props.onRequestRedraw();
+      } catch (ex) {
+        console.warn(ex);
+        alert('Arquivo inválido');
+      }
+    });
+  };
+
+  handleOpenOntologyClick = (e) => {
+    e.preventDefault();
+    openFile('.owl', (content) => {
+      try {
+        var state = OWLConversor.convertFromString(content);
+console.info(state);
 
         this.props.dispatch(loadNetwork(state));
         this.props.onRequestRedraw();
@@ -119,8 +137,8 @@ class Header extends Component {
   renderLiNetworkTypes = () => {
     return (
       <ul className={styles.subMenu}>
-        {this.createLi('BN', this.handleNewNetworkClick, 'Rede Bayesiana')}
-        {this.hasMSBNNetwork() ? this.createLi('MSBN', this.handleNewMSBNNetworkClick, 'Rede Bayesiana Multi-seccionada') : null}
+        {this.createLi('Rede Bayesiana', this.handleNewNetworkClick, 'Rede Bayesiana')}
+        {this.hasMSBNNetwork() ? this.createLi('Rede Bayesiana Multi-seccionada', this.handleNewMSBNNetworkClick, 'Rede Bayesiana Multi-seccionada') : null}
       </ul>
     );
   }
@@ -147,17 +165,23 @@ class Header extends Component {
         {this.state.menuVisible && (
           <ul className={styles.menu}>
             <li>
-              <a href="" onClick={this.handleNewNetworkClick}>Nova Rede</a>
+              <a href="">Nova</a>
               {this.renderLiNetworkTypes()}
             </li>
             <li>
-              <a href="" onClick={this.handleOpenNetworkClick}>Abrir Rede</a>
+              <a href="">Abrir</a>
             </li>
-              <li>
-              <a href="" onClick={this.handleOpenNetFileClick}>Abrir Rede .NET </a>
-            </li>
+            <ul>
+              <a href="" onClick={this.handleOpenNetworkClick}>Rede Bayesiana</a>
+            </ul>
+              <ul>
+              <a href="" onClick={this.handleOpenNetFileClick}>Rede Bayesiana .NET </a>
+            </ul>
+            <ul>
+              <a href="" onClick={this.handleOpenOntologyClick}>Ontologia</a>
+            </ul>
             <li>
-              <a href="" onClick={this.handleSaveNetworkClick}>Salvar Rede</a>
+              <a href="" onClick={this.handleSaveNetworkClick}>Exportar</a>
             </li>
           </ul>
         )}
