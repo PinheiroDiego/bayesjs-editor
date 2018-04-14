@@ -170,16 +170,13 @@ console.info(state);
             </li>
             <li>
               <a href="">Abrir</a>
+            
+            <ul className={styles.subMenu}>
+                <li> <a href="" onClick={this.handleOpenNetworkClick}>Rede Bayesiana</a></li>
+                <li><a href="" onClick={this.handleOpenNetFileClick}>Rede Bayesiana .NET </a></li>
+                 <li> <a href="" onClick={this.handleOpenOntologyClick}>Ontologia</a></li>
+            </ul>
             </li>
-            <ul>
-              <a href="" onClick={this.handleOpenNetworkClick}>Rede Bayesiana</a>
-            </ul>
-              <ul>
-              <a href="" onClick={this.handleOpenNetFileClick}>Rede Bayesiana .NET </a>
-            </ul>
-            <ul>
-              <a href="" onClick={this.handleOpenOntologyClick}>Ontologia</a>
-            </ul>
             <li>
               <a href="" onClick={this.handleSaveNetworkClick}>Exportar</a>
             </li>
