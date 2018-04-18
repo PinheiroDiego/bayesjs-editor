@@ -1,0 +1,19 @@
+{
+  "removeElements" : [
+    "bogo", "bogos", "bogu", "bogus", "http://www.geneontology.org/formats/oboinowl#obsoleteclass"
+  ],
+  "ignoreElements" : [
+    "owl:thing",
+    "sinal", "sinais", "sintoma", "sintomas", "diagnostico", "diagnósticos", "conduta", "condutas",
+    "tratamento", "tratamentos", "intervenções", "intervenção", "queixas", "queixa",
+    "características observadas", "característica observada", "quadro observado", "quadros observados",
+    "investigação",  "investigações", "casos clínicos", "caso clinico", "sign", "signal", "signals", "symptom",
+    "symptoms", "diagnosis", "diagnostics", "conduct", "ducts", "pipelines", "treatment",
+    "treatments", "defining characteristics", "defining characteristic", "intervention",
+    "interventions", "complaints", "complaint", "characteristics observed", "characteristic observed",
+    "observed frame", "observed frames", "clinical cases", "clinical case", "investigation",
+    "investigations", "señal", "señales", "síntoma", "síntomas", "conducta", "tratamiento",
+    "tratamientos", "intervención", "intervenciones", "quejas", "queja",
+    "cuadro observado", "cuadros observados", "investigación", "investigaciones"
+  ]
+}

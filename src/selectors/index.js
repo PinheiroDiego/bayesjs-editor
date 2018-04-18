@@ -40,8 +40,6 @@ export const getStateToSave = createSelector(
         beliefs: {},
       })),
     },
-    nodes,
-    positions,
   })
 );
 
