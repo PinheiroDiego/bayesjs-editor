@@ -7,8 +7,7 @@ import Button from '../Button';
 import { v4 } from 'uuid';
 import styles from './styles.css';
 import { convert } from 'bayesjs-converter';
-
-import '../../utils/OWLConversor/OWLConversor.js';
+import owlConversor from '../../utils/owlConversor/owlConversor';
 
 class Header extends Component {
   state = {
@@ -67,8 +66,7 @@ class Header extends Component {
     e.preventDefault();
     openFile('.owl', (content) => {
       try {
-        var state = OWLConversor.convertFromString(content);
-console.info(state);
+        var state = owlConversor.convertFromString(content);
 
         this.props.dispatch(loadNetwork(state));
         this.props.onRequestRedraw();
