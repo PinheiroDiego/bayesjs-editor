@@ -176,7 +176,7 @@ class Header extends Component {
             </ul>
             </li>
             <li>
-              <a href="" onClick={this.handleSaveNetworkClick}>Exportar</a>
+              <a href="" onClick={this.handleSaveNetworkClick}>Salvar</a>
             </li>
           </ul>
         )}
