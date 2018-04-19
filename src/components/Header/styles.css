@@ -86,21 +86,6 @@
   padding-left: 25px;
 }
 
-
-/* Mostra o submenu no evento de mouse hover */
-.header > .menu > li:hover > .subMenu {
-  display: block;
-}
-
-/* Configura o estilo do submenu */
-.header > .menu > li > .subMenu {
-  display: none;
-}
-
-.menu {
-  min-width: 17%;
-}
-
 .menu  p {
   display: block;
   text-decoration: none;
