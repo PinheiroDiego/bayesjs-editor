@@ -115,6 +115,12 @@ class Header extends Component {
       }
     };
 
+    // editor loads nodes and positions from the root, not from 'network';
+    state.nodes = stateToSave.network.nodes || stateToSave.nodes;
+    state.positions = stateToSave.network.positions || stateToSave.positions;
+    delete state.network.nodes;
+    delete state.network.positions;
+
     if (!state.network.id) {
       state.network.id = v4();
     }
