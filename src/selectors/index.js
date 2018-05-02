@@ -1,129 +1,204 @@
-import { createSelector } from 'reselect';
-import { addNode, infer } from 'bayesjs';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { newNetwork, loadNetwork, newMSBNNetwork, NETWORK_KINDS } from '../../actions';
+import { getStateToSave } from '../../selectors';
+import { openFile, saveFile } from '../../utils/file';
+import Button from '../Button';
+import { v4 } from 'uuid';
+import styles from './styles.css';
+import { convert } from 'bayesjs-converter';
+import owlConversor from '../../utils/owlConversor/owlConversor';
 
-import { NETWORK_KINDS } from '../actions';
-import { 
-  combNodesAndBeliefs, 
-  combNodesAndPositions ,
-  combLinkagesBySubnetwork,
-  combLinkagesByTwoSubnetwork,
-  combSubnetworksById,
-  combNetworkMSBN,
-  combNodesAndBeliefsMSBN,
-  combAllLinkagesBySubnetwork,
-  combSubnetworksColorById,
-} from './combiners';
+class Header extends Component {
+  state = {
+    menuVisible: false,
+  };
 
-export const getNetwork = state => state.network;
-export const getNodes = state => state.network.nodes || state.nodes || [];
-export const getPositions = state => state.network.positions || state.positions || [];
-export const getBeliefs = state => state.network.beliefs;
-export const getSubnetworks = state => state.network.subnetworks || [];
-export const getNetworkKind = state => state.network.kind || NETWORK_KINDS.BN;
-export const getPanelVisibility = state => state.network.propertiesPanelVisible;
-export const getLinkages = state => state.network.linkages;
-export const getInferenceEnabled = state => state.network.inferenceEnabled === undefined ? true : state.network.inferenceEnabled;
+  componentDidMount() {
+    window.addEventListener('click', this.handleWindowClick);
+  }
 
-export const getStateToSave = createSelector(
-  getNetwork,
-  getNodes,
-  getPositions,
-  getSubnetworks,
-  (network, nodes, positions, subnetworks) => ({
-    version: 2,
-    network: {
-      ...network,
-      selectedNodes: [],
-      beliefs: {},
-      subnetworks: subnetworks.map((sub) => ({
-        ...sub,
-        beliefs: {},
-      })),
-    },
-  })
-);
+  componentWillUnmount() {
+    window.removeEventListener('click', this.handleWindowClick);
+  }
 
-export const getSelectedNode = createSelector(
-  getNetwork,
-  getNodes,
-  (network, nodes) => {
-    if (network.selectedNodes.length !== 1) {
-      return null;
+  handleWindowClick = () => {
+    this.setState({ menuVisible: false });
+  };
+
+  handleToggleMenu = e => {
+    e.stopPropagation();
+    this.setState({ menuVisible: !this.state.menuVisible });
+  };
+
+  handleNewNetworkClick = (e) => {
+    e.preventDefault();
+    if (confirm('Os dados da rede atual serão perdidos. Deseja continuar?')) {
+      this.props.dispatch(newNetwork());
+      this.props.onRequestRedraw();
+    }
+  };
+
+  handleNewMSBNNetworkClick = (e) => {
+    e.preventDefault();
+    if (confirm('Os dados da rede atual serão perdidos. Deseja continuar?')) {
+      this.props.dispatch(newNetwork(NETWORK_KINDS.MSBN));
+      this.props.onRequestRedraw();
+    }
+  }
+
+  handleOpenNetworkClick = (e) => {
+    e.preventDefault();
+    openFile('.json', (json) => {
+      try {
+        const state = JSON.parse(json);
+
+        this.props.dispatch(loadNetwork(state));
+        this.props.onRequestRedraw();
+      } catch (ex) {
+        console.warn(ex);
+        alert('Arquivo inválido');
+      }
+    });
+  };
+
+  handleOpenOntologyClick = (e) => {
+    e.preventDefault();
+    openFile('.owl', (content) => {
+      try {
+        var state = owlConversor.convertFromString(content);
+
+        this.props.dispatch(loadNetwork(state));
+        this.props.onRequestRedraw();
+      } catch (ex) {
+        console.warn(ex);
+        alert('Arquivo inválido');
+      }
+    });
+  };
+
+  handleOpenNetFileClick = (e) => {
+    e.preventDefault();
+    openFile('.net', (content) => {
+      try {
+        const state = convert(content)
+
+        this.props.dispatch(loadNetwork(state));
+        this.props.onRequestRedraw();
+      } catch (ex) {
+        console.warn(ex);
+        alert('Arquivo inválido');
+      }
+    });
+  };
+
+  getNetworkName = () => {
+    const { name } = this.props.stateToSave.network;
+
+    if (name) {
+      let newName = name.trim();
+      newName = newName.toLowerCase();
+      newName = newName.replace(/[.]/g, '');
+      newName = newName.replace(/[ ]/g, '_');
+
+      return newName || 'network';// In case the name is blank
+    }
+    return 'network';
+  };
+
+  stateToSave = () => {
+    const { stateToSave } = this.props;
+    const state = {
+      ...stateToSave,
+      network: {
+        ...stateToSave.network
+      }
+    };
+
+    // editor loads nodes and positions from the root, not from 'network';
+    state.nodes = stateToSave.network.nodes || stateToSave.nodes;
+    state.positions = stateToSave.network.positions || stateToSave.positions;
+    delete state.network.nodes;
+    delete state.network.positions;
+
+    if (!state.network.id) {
+      state.network.id = v4();
     }
 
-    return nodes.find(x => x.id === network.selectedNodes[0]);
-  },
-);
+    return state;
+  }
 
-export const getSelectedSubnetwork = createSelector(
-  getNetwork,
-  getSubnetworks,
-  (network, subnetworks) => {
-    if (network.selectedNodes.length !== 1) {
-      return null;
-    }
+  handleSaveNetworkClick = (e) => {
+    e.preventDefault();
+    const json = JSON.stringify(this.stateToSave(), null, 2);
+    saveFile(`${this.getNetworkName()}.json`, json);
+  };
 
-    return subnetworks.find(sub => sub.id === network.selectedNodes[0]);
-  },
-);
+  hasMSBNNetwork = () => {
+    return true;
+  }
 
-export const getNodesWithPositions = createSelector(
-  getNodes,
-  getPositions,
-  combNodesAndPositions
-);
+  renderLiNetworkTypes = () => {
+    return (
+      <ul className={styles.subMenu}>
+        {this.createLi('Rede Bayesiana', this.handleNewNetworkClick, 'Rede Bayesiana')}
+        {this.hasMSBNNetwork() ? this.createLi('Rede Bayesiana Multi-seccionada', this.handleNewMSBNNetworkClick, 'Rede Bayesiana Multi-seccionada') : null}
+      </ul>
+    );
+  }
 
-export const getSubnetworksWithPosition = createSelector(
-  getSubnetworks,
-  getPositions,
-  combNodesAndPositions
-);
+  createLi = (name, handleOnClick, title = '') => {
+    return (
+      <li>
+        <a href="" onClick={handleOnClick} title={title}>{name}</a>
+      </li>
+    );
+  }
 
-export const getInferenceResults = createSelector(
-  getNodes,
-  getBeliefs,
-  getInferenceEnabled,
-  combNodesAndBeliefs
-);
+  render() {
+    return (
+      <div className={styles.header}>
+        <h1 className={styles.title}>Bayes Editor</h1>
+        <Button
+          title="Menu"
+          className={styles.menuButton}
+          onClick={this.handleToggleMenu}
+        >
+          <i className="fa fa-bars" />
+        </Button>
+        {this.state.menuVisible && (
+          <ul className={styles.menu}>
+            <li>
+              <a href="">Nova</a>
+              {this.renderLiNetworkTypes()}
+            </li>
+            <li>
+              <a href="">Abrir</a>
+            
+            <ul className={styles.subMenu}>
+                <li> <a href="" onClick={this.handleOpenNetworkClick}>Rede Bayesiana</a></li>
+                <li><a href="" onClick={this.handleOpenNetFileClick}>Rede Bayesiana .NET </a></li>
+                 <li> <a href="" onClick={this.handleOpenOntologyClick}>Ontologia</a></li>
+            </ul>
+            </li>
+            <li>
+              <a href="" onClick={this.handleSaveNetworkClick}>Salvar</a>
+            </li>
+          </ul>
+        )}
+      </div>
+    );
+  }
+}
 
-export const getNetworkMSBN = createSelector(
-  getSubnetworks,
-  getLinkages,
-  combNetworkMSBN,
-);
+Header.propTypes = {
+  stateToSave: PropTypes.object.isRequired,
+  onRequestRedraw: PropTypes.func.isRequired,
+  dispatch: PropTypes.func.isRequired,
+};
 
-export const getInferenceResultsMSBN = createSelector(
-  getSubnetworks,
-  getLinkages,
-  getBeliefs,
-  getInferenceEnabled,
-  combNodesAndBeliefsMSBN
-);
+const mapStateToProps = state => ({
+  stateToSave: getStateToSave(state),
+});
 
-export const getLinkagesBySubnetwork = createSelector(
-  getLinkages,
-  getSubnetworks,
-  combLinkagesBySubnetwork
-);
-
-export const getAllLinkagesBySubnetworkWithoutId = createSelector(
-  getLinkages,
-  getSubnetworks,
-  combAllLinkagesBySubnetwork
-);
-
-
-export const getLinkagesByTwoSubnetwork = createSelector(
-  getLinkages,
-  combLinkagesByTwoSubnetwork
-);
-
-export const getSubnetworksById = createSelector(
-  getSubnetworks,
-  combSubnetworksById
-);
-
-export const getSubnetworksColorById = createSelector(
-  getSubnetworks,
-  combSubnetworksColorById
-);
+export default connect(mapStateToProps)(Header);
