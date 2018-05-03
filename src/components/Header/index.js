@@ -169,11 +169,11 @@ class Header extends Component {
         {this.state.menuVisible && (
           <ul className={styles.menu}>
             <li>
-              <a href="">Nova</a>
+              <a href="#">Nova</a>
               {this.renderLiNetworkTypes()}
             </li>
             <li>
-              <a href="">Abrir</a>
+              <a href="#">Abrir</a>
             
             <ul className={styles.subMenu}>
                 <li> <a href="" onClick={this.handleOpenNetworkClick}>Rede Bayesiana</a></li>
