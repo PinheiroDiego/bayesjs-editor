@@ -6,10 +6,15 @@ export const persistState = store => next => action => {
     return next(action);
   }
 
-  const stateToSave = getStateToSave(store.getState());
-  const serializedState = JSON.stringify(stateToSave);
+  // A função persistState foi desabilitada em 06/08/2018
+  // Motivo: o localStorage possui um limite de espaço e se o
+  // usuário tenta abrir uma rede que ultrapassa esse limite, o
+  // editor apresenta erro e a rede nunca é carregada.
+  
+  // const stateToSave = getStateToSave(store.getState());
+  // const serializedState = JSON.stringify(stateToSave);
 
-  localStorage.setItem('state', serializedState);
+  // localStorage.setItem('state', serializedState);
 
   return undefined;
 };
