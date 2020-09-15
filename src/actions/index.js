@@ -18,6 +18,7 @@ export const CHANGE_NODE_CPT = 'CHANGE_NODE_CPT';
 export const SET_BELIEF = 'SET_BELIEF';
 export const ADD_LINKAGE = 'ADD_LINKAGE';
 export const REMOVE_LINKAGE = 'REMOVE_LINKAGE';
+export const CHANGE_NODE_TYPE = 'CHANGE_NODE_TYPE';
 
 export const NETWORK_KINDS = {
   BN: 'BN',
@@ -29,9 +30,9 @@ const persistState = () => ({
 });
 
 export const newNetwork = (kind: string = NETWORK_KINDS.BN) => dispatch => {
-  dispatch({ 
+  dispatch({
     type: NEW_NETWORK,
-    kind
+    kind,
   });
   dispatch(persistState());
 };
@@ -108,6 +109,14 @@ export const changeNodeDescription = (id, description) => dispatch => {
   dispatch(persistState());
 };
 
+export const changeNodeType = (id, type) => dispatch => {
+  dispatch({
+    type: CHANGE_NODE_TYPE,
+    payload: { id, type },
+  });
+  dispatch(persistState());
+};
+
 export const changeNodePosition = (id, x, y) => dispatch => {
   dispatch({
     type: CHANGE_NODE_POSITION,
@@ -148,7 +157,7 @@ export const addSuperNode = (state, position) => (dispatch) => {
   const id = state.network.id || state.network.name;
   dispatch({
     type: ADD_SUPER_NODE,
-    payload: { id, state, position }
+    payload: { id, state, position },
   });
 
   dispatch(persistState());
@@ -157,7 +166,7 @@ export const addSuperNode = (state, position) => (dispatch) => {
 export const removeSuperNode = (id) => (dispatch) => {
   dispatch({
     type: REMOVE_SUPER_NODE,
-    payload: { id }
+    payload: { id },
   });
 
   dispatch(persistState());
@@ -166,7 +175,7 @@ export const removeSuperNode = (id) => (dispatch) => {
 export const addLinkage = (linkage) => (dispatch) => {
   dispatch({
     type: ADD_LINKAGE,
-    payload: { linkage }
+    payload: { linkage },
   });
 
   dispatch(persistState());
@@ -175,7 +184,7 @@ export const addLinkage = (linkage) => (dispatch) => {
 export const removeLinkage = (id) => (dispatch) => {
   dispatch({
     type: REMOVE_LINKAGE,
-    payload: { id }
+    payload: { id },
   });
 
   dispatch(persistState());

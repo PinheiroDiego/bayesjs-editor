@@ -1,4 +1,4 @@
-import isEqual from 'lodash/isequal';
+import isEqual from 'lodash.isequal';
 
 const cliquesCache = new WeakMap();
 
@@ -222,7 +222,7 @@ const initializePotentials = (cliques, network) => {
 
       clique.potentials.push({
         when: combination,
-        then: value
+        then: value,
       });
     }
 
@@ -239,13 +239,13 @@ const buildCombinations = (network, nodesToCombine) => {
       return;
     }
 
-    const [ nodeId, ...rest ] = nodes;
+    const [nodeId, ...rest] = nodes;
     const states = network[nodeId].states;
 
     for (const state of states) {
       makeCombinations(rest, {
         ...acc,
-        [nodeId]: state
+        [nodeId]: state,
       });
     }
   };
@@ -333,7 +333,7 @@ const buildCliqueGraph = triangulatedGraph => {
   const nodes = triangulatedGraph.getNodes();
 
   for (let i = 0; i < nodes.length; i++) {
-    const clique = [ nodes[i] ];
+    const clique = [nodes[i]];
 
     for (let j = 0; j < nodes.length; j++) {
       if (i === j) {
@@ -350,7 +350,7 @@ const buildCliqueGraph = triangulatedGraph => {
     if (!cliques.some(x => isEqual(x.clique, clique))) {
       cliques.push({
         id: cliques.length.toString(),
-        clique
+        clique,
       });
     }
   }
@@ -383,7 +383,7 @@ const buildCliqueGraph = triangulatedGraph => {
   return {
     cliqueGraph,
     cliques,
-    sepSets
+    sepSets,
   };
 };
 
@@ -392,15 +392,15 @@ export const buildTriangulatedGraph = (moralGraph, lastNodes = []) => {
   const clonedGraph = triangulatedGraph.clone();
   const get = (obj) => {
     const v = obj.neighbors.length;
-    
-    return v + (lastNodes.indexOf(obj.node) === -1 ? 0 : 100)
+
+    return v + (lastNodes.indexOf(obj.node) === -1 ? 0 : 100);
   };
 
   const nodesToRemove = clonedGraph.getNodes()
     .map(node => {
       return {
         node,
-        neighbors: clonedGraph.getNeighborsOf(node)
+        neighbors: clonedGraph.getNeighborsOf(node),
       };
     })
     .sort((a, b) => {
@@ -492,13 +492,13 @@ const createGraph = () => {
   };
 
   const addEdge = (nodeA, nodeB, moralEdge = false, triang = false) => {
-    edges.push([ nodeA, nodeB ]);
+    edges.push([nodeA, nodeB]);
 
     if (moralEdge) {
-      moralEdges.push([ nodeA, nodeB ]);
+      moralEdges.push([nodeA, nodeB]);
     }
     if (triang) {
-      triangEdges.push([ nodeA, nodeB ]);
+      triangEdges.push([nodeA, nodeB]);
     }
   };
 
@@ -569,6 +569,6 @@ const createGraph = () => {
       console.dir(nodes);
       console.log('edges');
       console.dir(edges);
-    }
+    },
   };
 };

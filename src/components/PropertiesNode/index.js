@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { changeNodeId, changeNodeDescription } from '../../actions';
+import { changeNodeId, changeNodeDescription, changeNodeType } from '../../actions';
 import { getNodes } from '../../selectors';
 import Button from '../Button';
 import styles from './styles.css';
@@ -9,7 +9,7 @@ class PropertiesNode extends Component {
   constructor(props) {
     super(props);
     const { node } = props;
-    
+
     this.state = {
       inputText: node.id,
       nodeDescription: node.description || '',
@@ -19,19 +19,21 @@ class PropertiesNode extends Component {
   componentWillReceiveProps(nextProps) {
     const { id, description } = nextProps.node;
 
-    this.setState({ 
+    this.setState({
       inputText: id,
       nodeDescription: description || '',
-     })
+    });
   }
 
   handleOnChange = (e) => {
     const { value, id } = e.target;
 
-    if (id === "description") {
+    if (id === 'description') {
       this.setState({ nodeDescription: value });
-    } else if (id === "name") {
+    } else if (id === 'name') {
       this.setState({ inputText: value });
+    } else if (id === 'type') {
+      this.setState({ type: value });
     }
   };
 
@@ -60,6 +62,14 @@ class PropertiesNode extends Component {
     dispatch(changeNodeDescription(id, value));
   };
 
+  handleNodeTypeBlur = (e) => {
+    const { node, dispatch } = this.props;
+    const { value } = e.target;
+    const { id } = node;
+
+    dispatch(changeNodeType(id, value));
+  };
+
   handleKeyUpDescription = (e) => {
     const key = e.keyCode || e.which;
 
@@ -70,7 +80,7 @@ class PropertiesNode extends Component {
 
   render() {
     const { node } = this.props;
-    
+
     return (
       <div>
         <h2>Propriedades da Variável</h2>
@@ -84,6 +94,27 @@ class PropertiesNode extends Component {
             onChange={this.handleOnChange}
             onBlur={this.handleNodeNameBlur}
           />
+        </div>
+
+        <div className={styles.fieldWrapper}>
+          <label htmlFor="type">Tipo do Nodo</label>
+          <select
+            id="type"
+            style={{ width: '100%' }}
+            value={this.state.node}
+            onChange={this.handleOnChange}
+            onBlur={this.handleNodeTypeBlur}
+          >
+            <option value="">Selecione uma opção</option>
+            <option value="Fator relacionado">Fator relacionado</option>
+            <option value="População em risco">População em risco</option>
+            <option value="Condição associada">Condição associada</option>
+            <option value="Característica definidora">Característica definidora</option>
+            <option value="Diagnóstico de enfermagem">Diagnóstico de enfermagem</option>
+            <option value="Intervenção de enfermagem">Intervenção de enfermagem</option>
+            <option value="Outro diagnóstico">Outro diagnóstico</option>
+            <option value="Realizar outro diagnóstico">Realizar outro diagnóstico</option>
+          </select>
         </div>
 
         <div className={styles.fieldWrapper}>

@@ -1,5 +1,5 @@
-import { v4 } from "uuid";
-import { buildMoralGraph, buildTriangulatedGraph } from "./junctionTree";
+import { v4 } from 'uuid';
+import { buildMoralGraph, buildTriangulatedGraph } from './junctionTree';
 
 const weakMap = new WeakMap();
 
@@ -67,7 +67,7 @@ export interface ISuperNetwork {
     nodes?: { [id: string]: INode }
 }
 
-export interface IIdentifiers  {
+export interface IIdentifiers {
   originalToNew: IIdentifierOriginalToNew,
   newToOriginal: IIdentifierNewToOriginal,
 }
@@ -94,18 +94,18 @@ export const separeteNodes = (subnetworks: INetwork[], linkages: [ILinkageItem, 
   const links = linkages.reduce((p, [l1, l2]) => {
     p.push({
       networkId: l1.networkId,
-      nodeId: l1.nodeId
+      nodeId: l1.nodeId,
     });
     p.push({
       networkId: l2.networkId,
-      nodeId: l2.nodeId
+      nodeId: l2.nodeId,
     });
     return p;
   }, []);
 
   for (let net of subnetworks) {
     const netId = net.id;
-    const nodeIds = Object.keys(net.nodes)
+    const nodeIds = Object.keys(net.nodes);
 
     for (let nodeId of nodeIds) {
       const node = net.nodes[nodeId];
@@ -114,12 +114,12 @@ export const separeteNodes = (subnetworks: INetwork[], linkages: [ILinkageItem, 
       if (isLink) {
         connectedNodes.push({
           ...node,
-          networkId: netId
+          networkId: netId,
         });
       } else {
         notConnectedNodes.push({
           ...node,
-          networkId: netId
+          networkId: netId,
         });
       }
     }
@@ -127,7 +127,7 @@ export const separeteNodes = (subnetworks: INetwork[], linkages: [ILinkageItem, 
 
   return {
     connectedNodes,
-    notConnectedNodes
+    notConnectedNodes,
   };
 };
 
@@ -135,13 +135,13 @@ export interface ICptObjectWithNetwork {
   [id: string]: { networkId: string, value: number }
 }
 
-export interface ISuperNode  {
+export interface ISuperNode {
   id: string,
   states?: string[],
   parents: ILinkageItem[],
   cpt?: INodeCptWithWhenNetwork[] | ICptObjectWithNetwork,
   originals: INodeWithNetwork[]
-};
+}
 
 export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageItem, ILinkageItem][]): ISuperNode[] => {
   let linkagesClone = linkages.slice();
@@ -149,20 +149,20 @@ export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageI
 
   const findNode = ({ networkId, nodeId }: ILinkageItem) => {
     return nodes.find(n => n.id == nodeId && n.networkId == networkId);
-  }; 
+  };
 
   const find = (l: ILinkageItem) => {
     return superNodes
       .find(({ originals }) => {
-        return originals.some(({ networkId, id }) => l.networkId == networkId && l.nodeId == id)
+        return originals.some(({ networkId, id }) => l.networkId == networkId && l.nodeId == id);
       });
   };
-  
-  const mergeParents = (superArray: ILinkageItem[][]): ILinkageItem[] => {
+
+  const mergeParents = (superArray) => {
     return superArray.reduce((p, array) => {
       for (let item of array) {
         let { networkId, nodeId } = item;
-        //Validar a renomeação
+        // Validar a renomeação
         let alreadyAdd = p.some((node) => {
           return node.networkId == networkId && node.nodeId == nodeId;
         });
@@ -172,26 +172,26 @@ export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageI
     }, []);
   };
 
-  const mergeCpts = (superCpts: INodeCptWithWhenNetwork[][], parents: ILinkageItem[], states : string[]): INodeCptWithWhenNetwork[] => {
-    if (superCpts.length === 0) return  superCpts;
-    return superCpts.reduce((array, obj) => [ ...array, ...obj ]);
+  const mergeCpts = (superCpts, parents, states : string[]): INodeCptWithWhenNetwork[] => {
+    if (superCpts.length === 0) return superCpts;
+    return superCpts.reduce((array, obj) => [...array, ...obj]);
     // console.log(superCpts, parents);
     // const get = (current: INodeCptWithWhenNetwork[], index: number = 1): INodeCptWithWhenNetwork[] => {
     //   let result: INodeCptWithWhenNetwork[] = [];
-      
+
     //   if (superCpts[index] === undefined) return current;
 
     //   for (let cpt of superCpts[index]) {
     //     let { when, then } = cpt;
-      
+
     //     for (let i = 0; i < current.length; i++) {
     //       let cCpt = current[i];
     //       let newThen: INodeCptThen = {};
 
     //       for (let state of states) {
-    //         newThen[state] = then[state] + cCpt.then[state]; 
+    //         newThen[state] = then[state] + cCpt.then[state];
     //       }
-          
+
     //       result.push({
     //         when: {
     //           ...when,
@@ -209,26 +209,26 @@ export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageI
     //   return result;
     // }
     // let temp = get(superCpts[0]);
-    
-    // let temp2 = temp.map(({ when, then }) => { 
+
+    // let temp2 = temp.map(({ when, then }) => {
     //   let newThen: INodeCptThen = {};
     //   for (let state of states) {
-    //     newThen[state] = then[state] / superCpts.length; 
+    //     newThen[state] = then[state] / superCpts.length;
     //   }
     //   return {
-    //     when, 
-    //     then: newThen, 
+    //     when,
+    //     then: newThen,
     //   };
     // });
-    
+
     // return temp2;
   };
 
   for (let linkage of linkagesClone) {
     const [l1, l2] = linkage;
-    
+
     let sNode = find(l1);
-    
+
     if (sNode === undefined) {
       sNode = find(l2);
 
@@ -236,31 +236,31 @@ export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageI
         const temp = findNode(l1);
         const temp2 = findNode(l2);
         // if (temp === undefined || temp2 === undefined) continue
-        
-        //Criar supernode com os dois links
+
+        // Criar supernode com os dois links
         superNodes.push({
           id: createNodeId(l1.nodeId),
           originals: [temp, temp2],
           parents: [],
-          states: temp.states
+          states: temp.states,
         });
       } else {
-        //Add l1 no supernoda
+        // Add l1 no supernoda
         const temp = findNode(l1);
-        
+
         sNode.originals.push(temp);
       }
     } else if (find(l2) === undefined) {
-      //Add l2 no supernoda
+      // Add l2 no supernoda
       const temp = findNode(l2);
-      
+
       sNode.originals.push(temp);
     }
   }
 
   for (let node of superNodes) {
-    const allParents: ILinkageItem[][] = [];
-    const allCpt: INodeCptWithWhenNetwork[][] = [];
+    const allParents = [];
+    const allCpt = [];
     let cptObj = null;
 
     for (const original of node.originals) {
@@ -283,13 +283,13 @@ export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageI
                 newWhen[key] = {
                   value: when[key],
                   networkId,
-                }
+                };
               }
 
-              return { 
-                when: newWhen, 
-                then 
-              }
+              return {
+                when: newWhen,
+                then,
+              };
             })
           );
         } else if (cptObj == null) {
@@ -302,7 +302,6 @@ export const createSuperNodes = (nodes: INodeWithNetwork[], linkages: [ILinkageI
     if (allCpt.length) {
       node.cpt = mergeCpts(allCpt, node.parents, node.states);
       // console.log(node.id, node.cpt);
-      
     } else {
       node.cpt = cptObj;
     }
@@ -323,13 +322,13 @@ export const createSuperNode = (node: INodeWithNetwork): ISuperNode => {
         newWhen[key] = {
           value: when[key],
           networkId: node.networkId,
-        }
+        };
       }
 
-      return { 
-        when: newWhen, 
-        then 
-      }
+      return {
+        when: newWhen,
+        then,
+      };
     });
   } else {
     const temp = node.cpt;
@@ -340,7 +339,7 @@ export const createSuperNode = (node: INodeWithNetwork): ISuperNode => {
       const value = temp[key];
 
       cpt[key] = { value, networkId: node.networkId };
-    } 
+    }
   }
 
   const newNode: ISuperNode = {
@@ -348,20 +347,20 @@ export const createSuperNode = (node: INodeWithNetwork): ISuperNode => {
     cpt,
     states: node.states,
     parents: node.parents.map((p) => ({ networkId: node.networkId, nodeId: p })),
-    originals: [node]
+    originals: [node],
   };
 
   return newNode;
-}
+};
 
 export const createKey = (networkId: string, nodeId: string) => `${networkId}(${nodeId})`;
 export const keyToNetworkAndNode = (key: string) => {
-  const [ networkId, nodeId ] = key.split('(');
+  const [networkId, nodeId] = key.split('(');
 
   return {
     networkId,
     nodeId: nodeId.replace(')', ''),
-  }
+  };
 };
 
 export const createIdentifier = (nodes: ISuperNode[]): IIdentifiers => {
@@ -369,7 +368,7 @@ export const createIdentifier = (nodes: ISuperNode[]): IIdentifiers => {
   let originalToNew: IIdentifierOriginalToNew = {};
   let newToOriginal: IIdentifierNewToOriginal = {};
   let newSuperNodes: ISuperNode[] = [];
-  
+
   const findParentName = (parent: ILinkageItem): string => {
     for (let superNode of superNodes) {
       const node = superNode.originals.find((original) => {
@@ -388,7 +387,7 @@ export const createIdentifier = (nodes: ISuperNode[]): IIdentifiers => {
 
     for (let originalNode of superNode.originals) {
       const key = createKey(originalNode.networkId, originalNode.id);
- 
+
       originalToNew[key] = id;
       newToOriginalList.push({
         networkId: originalNode.networkId,
@@ -418,18 +417,18 @@ export const checkDuplicatesCpts = (cpts: INodeCpt[]): INodeCpt[] => {
     for (let j = i + 1; j < cpts.length; j++) {
       const cpt2 = cpts[j];
       const whenKeys2 = Object.keys(cpt2.when);
-      const sameWhens = whenKeys1.length == whenKeys2.length && 
+      const sameWhens = whenKeys1.length == whenKeys2.length &&
         whenKeys1.every(wk => cpt1.when[wk] === cpt2.when[wk]);
-      
+
       if (sameWhens) {
         duplicates.push(cpt2);
         ignoreIndexes.push(j);
       }
     }
-    
+
     if (duplicates.length > 0) {
-      const all = [ ...duplicates, cpt1 ];
-      const thenKeys = Object.keys(cpt1.then);;
+      const all = [...duplicates, cpt1];
+      const thenKeys = Object.keys(cpt1.then);
       let then = all[0].then;
 
       for (let i = 1; i < all.length; i++) {
@@ -445,16 +444,15 @@ export const checkDuplicatesCpts = (cpts: INodeCpt[]): INodeCpt[] => {
         when: cpt1.when,
         then,
       });
-
     } else {
       result.push(cpt1);
-    } 
+    }
   }
 
   return result;
 };
 
-export const mergeCpts = (cpts: INodeCptWithWhenNetwork[] | ICptObjectWithNetwork, identifiers:  { [id: string]: string }): (INodeCpt[] | INodeCptObject) => {
+export const mergeCpts = (cpts: INodeCptWithWhenNetwork[] | ICptObjectWithNetwork, identifiers: { [id: string]: string }): (INodeCpt[] | INodeCptObject) => {
   if (Array.isArray(cpts)) {
     const newCpts: INodeCpt[] = [];
 
@@ -462,10 +460,10 @@ export const mergeCpts = (cpts: INodeCptWithWhenNetwork[] | ICptObjectWithNetwor
       if (cpt.when && cpt.then) {
         const whenKeys = Object.keys(cpt.when);
         let newWhen: INodeCptWhen = {};
-        
+
         for (let whenKey of whenKeys) {
           const whenItem = cpt.when[whenKey];
-          const key = createKey(whenItem.networkId, whenKey)
+          const key = createKey(whenItem.networkId, whenKey);
           const whenId = identifiers[key];
           // newWhen[identifiers[key]] = cpt.when[whenKey];
           newWhen[whenId] = whenItem.value;
@@ -479,12 +477,11 @@ export const mergeCpts = (cpts: INodeCptWithWhenNetwork[] | ICptObjectWithNetwor
     }
 
     return checkDuplicatesCpts(newCpts);
-
   } else {
     const keys = Object.keys(cpts);
-    if (typeof cpts[keys[0]] === "object") {
+    if (typeof cpts[keys[0]] === 'object') {
       let result: INodeCptObject = {};
-      
+
       for (let key of keys) {
         const value = cpts[key];
 
@@ -493,7 +490,7 @@ export const mergeCpts = (cpts: INodeCptWithWhenNetwork[] | ICptObjectWithNetwor
 
       return result;
     }
-    
+
     return cpts;
   }
 };
@@ -502,14 +499,14 @@ export const createMissingLinkages = (linkages: [ILinkageItem, ILinkageItem][]):
   const cacheLinkages = weakMap.get(linkages);
   if (cacheLinkages) return cacheLinkages;
   let newLinkages:[ILinkageItem, ILinkageItem][] = [];
-  //validar
-  
+  // validar
+
   const isConnected = (a: ILinkageItem, b: ILinkageItem) => {
     return linkages.some(([l1, l2]) => {
       return (l1.networkId == a.networkId && l1.nodeId == a.nodeId &&
         l2.networkId == b.networkId && l2.nodeId == b.nodeId) ||
         (l2.networkId == a.networkId && l2.nodeId == a.nodeId &&
-        l1.networkId == b.networkId && l1.nodeId == b.nodeId)
+        l1.networkId == b.networkId && l1.nodeId == b.nodeId);
     });
   };
 
@@ -527,7 +524,7 @@ export const createMissingLinkages = (linkages: [ILinkageItem, ILinkageItem][]):
     let result: ILinkageItem[] = [];
     const { networkId, nodeId } = linkageItem;
 
-    for (let [ l1, l2 ] of allLinkages) {
+    for (let [l1, l2] of allLinkages) {
       if (l1.networkId == networkId && l1.nodeId == nodeId) {
         result.push(l2);
       } else if (l2.networkId == networkId && l2.nodeId == nodeId) {
@@ -537,16 +534,16 @@ export const createMissingLinkages = (linkages: [ILinkageItem, ILinkageItem][]):
 
     return result;
   };
-  
+
   for (let link of list) {
     const neighbors = getNeighbors(
       [
         ...linkages,
         ...newLinkages,
-      ], 
+      ],
       link
     );
-    
+
     for (var i = 0; i < neighbors.length; i++) {
       let neighborA = neighbors[i];
 
@@ -556,13 +553,13 @@ export const createMissingLinkages = (linkages: [ILinkageItem, ILinkageItem][]):
         if (!isConnected(neighborA, neighborB)) {
           newLinkages.push([neighborA, neighborB]);
         }
-      } 
+      }
     }
   }
 
   const result = [
     ...linkages,
-    ...newLinkages
+    ...newLinkages,
   ];
   weakMap.set(linkages, result);
   return result;
@@ -576,12 +573,12 @@ export const mergeNetworks = (subnetworks: INetwork[], linkages: [ILinkageItem, 
   const superNodes = createSuperNodes(connectedNodes, allLinkages);
   const formatNode = ({ networkId, id }: INodeWithNetwork): ILinkageItem => ({
     networkId,
-    nodeId: id
+    nodeId: id,
   });
 
   for (let node of notConnectedNodes) {
     const newNode = createSuperNode(node);
-    
+
     nodes.push(newNode);
   }
 
@@ -596,16 +593,16 @@ export const mergeNetworks = (subnetworks: INetwork[], linkages: [ILinkageItem, 
 
   for (let node of nodes) {
     let newParents: string[] = [];
-    let newCpts: INodeCpt[] = [];//INodeCtp[] | INodeCtpObject
+    let newCpts: INodeCpt[] = [];// INodeCtp[] | INodeCtpObject
     let newCpt: INodeCptObject = {};
 
     for (let parent of node.parents) {
       const key = createKey(parent.networkId, parent.nodeId);
       const parentName = identifierOriginalToNew[key];
-      
+
       newParents.push(parentName);
     }
-    
+
     // if (node.id.indexOf('C') != -1) {
       // console.log(node.id);
       // console.log(JSON.stringify(mergeCpts(node.cpt, identifierOriginalToNew)));
@@ -615,11 +612,11 @@ export const mergeNetworks = (subnetworks: INetwork[], linkages: [ILinkageItem, 
       id: node.id,
       cpt: mergeCpts(node.cpt, identifierOriginalToNew),
       parents: newParents,
-      states: node.states
+      states: node.states,
     });
   }
 
-  
+
   network = finalNodes.reduce((p, node) => {
     p[node.id] = {
       id: node.id,
@@ -634,7 +631,7 @@ export const mergeNetworks = (subnetworks: INetwork[], linkages: [ILinkageItem, 
   const result = {
     network,
     subnetworks: newSubnetworks,
-    identifiers
+    identifiers,
   };
   // weakMap.set({ subnetworks, linkages }, result);
   return result;
@@ -648,18 +645,18 @@ export const originalSubnetworkToNew = (subnetwork: INetwork, identifiers: IIden
   const getNewNodeId = (nodeId: string) => {
     const key = createKey(subnetwork.id, nodeId);
     return originalToNew[key];
-  }
-  
+  };
+
   for (const nodeId of Object.keys(nodes)) {
     const node = nodes[nodeId];
     const newNodeId = getNewNodeId(nodeId);
     const { cpt, parents } = node;
     let newParents = [];
     let newCpts = cpt;
-    
+
     for (let parent of parents) {
       const newParentId = getNewNodeId(parent);
-      
+
       newParents.push(newParentId);
     }
 
@@ -694,7 +691,7 @@ export const linkagesByNetwork = (linkages: [ILinkageItem, ILinkageItem][]) => {
   let result: { [id: string]: string[] } = {};
   const add = (networkId: string, nodeId: string) => {
     const itens = result[networkId] || [];
-    
+
     if (itens.indexOf(nodeId) === -1) {
       itens.push(nodeId);
       result[networkId] = itens;
@@ -715,20 +712,19 @@ const intersection = (listA, listB) => {
   let intersection = new Set([...a].filter(x => b.has(x)));
 
   return [...intersection];
-}
+};
 
 export const junctionTreeInSubnetwork = (subnetworks: INetwork[], linkages: [ILinkageItem, ILinkageItem][]) => {
-  
   return null;
   const allLinkages = createMissingLinkages(linkages);
   const linksBySub = linkagesByNetwork(allLinkages);
   const moralGraphs = subnetworks.map((sub) => buildMoralGraph(sub.nodes));
   const triangGraphs = moralGraphs.map((moral, i) => {
     const nodesLinkeds = linksBySub[subnetworks[i].id];
-    
+
     return buildTriangulatedGraph(moral, nodesLinkeds);
   });
-  
+
   // const findLink = (networkId: string, nodeId: string) => {
   //   for (let [ l1, l2 ] of allLinkages) {
   //     if (l1.networkId == networkId && l1.nodeId == nodeId) return l2;
@@ -736,7 +732,7 @@ export const junctionTreeInSubnetwork = (subnetworks: INetwork[], linkages: [ILi
   //   }
   // };
   const isLink = (networkId: string, nodeId: string) => {
-    for (let [ l1, l2 ] of allLinkages) {
+    for (let [l1, l2] of allLinkages) {
       if (l1.networkId == networkId && l1.nodeId == nodeId) return true;
       if (l2.networkId == networkId && l2.nodeId == nodeId) return true;
     }
@@ -752,7 +748,7 @@ export const junctionTreeInSubnetwork = (subnetworks: INetwork[], linkages: [ILi
     console.log(triangEdges);
     for (let [nodeId1, nodeId2] of moralEdges) {
       if (links.indexOf(nodeId1) !== -1 && links.indexOf(nodeId2) !== -1) {
-        //passar para as outras
+        // passar para as outras
         console.log('Passar (moral)', subnetwork.id, nodeId1, nodeId2);
       }
     }
@@ -770,7 +766,7 @@ export const junctionTreeInSubnetwork = (subnetworks: INetwork[], linkages: [ILi
         let aa = graph.getNeighborsOf(nodeId2);
         let cc = intersection(aa, bb).filter(x => x != nodeId1 || x != nodeId2);
         console.log(cc, nodeId1, nodeId2);
-        debugger
+        debugger;
 
 //         let a = new Set([1,2,3]);
 // let b = new Set([4,3,2]);
@@ -782,9 +778,7 @@ export const junctionTreeInSubnetwork = (subnetworks: INetwork[], linkages: [ILi
         // console.log('Passar (triang)', subnetwork.id, nodeId1, nodeId2);
       }
     }
-    
   }
-  
 };
 
 /**
@@ -794,14 +788,14 @@ export const junctionTreeInSubnetwork = (subnetworks: INetwork[], linkages: [ILi
 export const topologicalSort = (nodes: INode[]): { cyclic: boolean, sort: string[] } => {
   let nodeIds: string[] = nodes.map(n => n.id);
   let dict: { [id: string]: { parents: string[], childs: string[] } } = {};
-  
+
   for (let id of nodeIds) {
     dict[id] = {
       childs: [],
-      parents: []
+      parents: [],
     };
   }
-  
+
   for (let node of nodes) {
     dict[node.id].parents = node.parents;
 
@@ -813,7 +807,6 @@ export const topologicalSort = (nodes: INode[]): { cyclic: boolean, sort: string
 
   let S: string[] = [];
   for (let id of nodeIds) {
-    
     if (dict[id].parents.length == 0) {
       S.push(id);
     }
@@ -849,13 +842,13 @@ export const topologicalSort = (nodes: INode[]): { cyclic: boolean, sort: string
       cyclic = true;
       break;
     }
-  }  
+  }
 
   return {
     cyclic,
-    sort: L
+    sort: L,
   };
-}
+};
 
 /**
  * Check if a graph/network has cycles.
@@ -863,13 +856,13 @@ export const topologicalSort = (nodes: INode[]): { cyclic: boolean, sort: string
  */
 export const hasCycles = (nodes: INode[]): boolean => {
   return topologicalSort(nodes).cyclic;
-}
+};
 
 // // inferMSBN(
 // //   //sub-redes []
 // //   //linkage. link entre as sub-redes
 // //   //inferencias
-// //   //o que eu sei 
+// //   //o que eu sei
 // // )
 
 // // infer({//Rede
@@ -891,4 +884,4 @@ export const hasCycles = (nodes: INode[]): boolean => {
 // // }, {//O que eu sei que é verdade (opicional)
 // //   C: 'T',
 // //   B: 'F'
-// // }); 
+// // });
