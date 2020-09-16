@@ -1,0 +1,22 @@
+{
+  "name": "float",
+  "version": "1.0.2",
+  "description": "Provides methods for comparing and rounding floating point numbers",
+  "main": "src/float.js",
+  "scripts": {
+    "test": "mocha --reporter spec ./tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mex/float"
+  },
+  "author": "Michael Storgaard",
+  "bugs": {
+    "url": "https://github.com/mex/float/issues"
+  },
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "*"
+  }
+}

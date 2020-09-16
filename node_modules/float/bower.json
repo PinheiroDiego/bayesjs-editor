@@ -1,0 +1,30 @@
+{
+  "name": "float",
+  "version": "1.0.1",
+  "homepage": "https://github.com/mex/float",
+  "authors": [
+    "Michael Storgaard <float@mex.io>"
+  ],
+  "description": "Provides methods for comparing and rounding floating point numbers",
+  "main": "src/float.js",
+  "keywords": [
+    "float",
+    "integers",
+    "numbers",
+    "integer",
+    "number",
+    "rounding",
+    "comparing",
+    "comparison",
+    "compare",
+    "round"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
