@@ -21487,7 +21487,8 @@
 
 	    _this.state = {
 	      inputText: node.id,
-	      nodeDescription: node.description || ''
+	      nodeDescription: node.description || '',
+	      type: node.type || ''
 	    };
 	    return _this;
 	  }
@@ -21498,11 +21499,13 @@
 	      var _nextProps$node = nextProps.node;
 	      var id = _nextProps$node.id;
 	      var description = _nextProps$node.description;
+	      var type = _nextProps$node.type;
 
 
 	      this.setState({
 	        inputText: id,
-	        nodeDescription: description || ''
+	        nodeDescription: description || '',
+	        type: type || ''
 	      });
 	    }
 	  }, {
@@ -21550,7 +21553,7 @@
 	            {
 	              id: 'type',
 	              style: { width: '100%' },
-	              value: this.state.node,
+	              value: this.state.type,
 	              onChange: this.handleOnChange,
 	              onBlur: this.handleNodeTypeBlur
 	            },
@@ -21810,6 +21813,7 @@
 
 
 	      if (selectedNode) {
+	        console.log('aqui', selectedNode);
 	        return _react2.default.createElement(_PropertiesNode2.default, {
 	          node: selectedNode,
 	          onEditNodeStates: onEditNodeStates,

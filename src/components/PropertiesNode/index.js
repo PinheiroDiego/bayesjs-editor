@@ -13,15 +13,17 @@ class PropertiesNode extends Component {
     this.state = {
       inputText: node.id,
       nodeDescription: node.description || '',
+      type: node.type || '',
     };
   }
 
   componentWillReceiveProps(nextProps) {
-    const { id, description } = nextProps.node;
+    const { id, description, type } = nextProps.node;
 
     this.setState({
       inputText: id,
       nodeDescription: description || '',
+      type: type || '',
     });
   }
 
@@ -101,7 +103,7 @@ class PropertiesNode extends Component {
           <select
             id="type"
             style={{ width: '100%' }}
-            value={this.state.node}
+            value={this.state.type}
             onChange={this.handleOnChange}
             onBlur={this.handleNodeTypeBlur}
           >
