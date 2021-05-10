@@ -21594,13 +21594,8 @@
 	            ),
 	            _react2.default.createElement(
 	              'option',
-	              { value: 'Outro diagn\xF3stico' },
-	              'Outro diagn\xF3stico'
-	            ),
-	            _react2.default.createElement(
-	              'option',
-	              { value: 'Realizar outro diagn\xF3stico' },
-	              'Realizar outro diagn\xF3stico'
+	              { value: 'Agrupador' },
+	              'Agrupador'
 	            )
 	          )
 	        ),
